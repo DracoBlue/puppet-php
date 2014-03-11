@@ -65,10 +65,14 @@ define php::fpm::conf (
     file { "${php::params::fpm_pool_dir}/${pool}.conf":
       notify  => Service[$php::params::fpm_service_name],
       ensure  => absent,
-      require => Package[$php::params::fpm_package_name],
+      require => Php::Package::Fpm[$php::params::fpm_package_name],
     }
 
   } else {
+
+    file { "${php::params::fpm_pool_dir}":
+      ensure => directory
+    }
 
     file { "${php::params::fpm_pool_dir}/${pool}.conf":
       notify  => Service[$php::params::fpm_service_name],
@@ -76,7 +80,7 @@ define php::fpm::conf (
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
-      require => Package[$php::params::fpm_package_name],
+      require => [Php::Package::Fpm[$php::params::fpm_package_name], File[$php::params::fpm_pool_dir]],
     }
 
   }
